@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ArticleCreateResponse {
+public class ArticleModifyResponse {
 
     private final Article article;
 
