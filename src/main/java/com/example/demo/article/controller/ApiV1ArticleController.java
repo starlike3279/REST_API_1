@@ -10,20 +10,26 @@ import com.example.demo.article.response.ArticleResponse;
 import com.example.demo.article.response.ArticlesResponse;
 import com.example.demo.article.service.ArticleService;
 import com.example.demo.global.RsData.RsData;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @RestController
-@RequestMapping("/api/v1/articles")
+@RequestMapping(value = "/api/v1/articles", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Tag(name = "ApiV1ArticleController", description = "게시글 CRUD API")
 public class ApiV1ArticleController {
 
     private final ArticleService articleService;
 
     @GetMapping("")
+    @Operation(summary = "게시글 다건 조회")
     public RsData<ArticlesResponse> list() {
 
         List<ArticleDTO> articleList = this.articleService.getList();
@@ -33,15 +39,18 @@ public class ApiV1ArticleController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "게시글 단건 조회")
     public RsData<ArticleResponse> getArticle(@PathVariable("id") Long id) {
 
         Article article = this.articleService.getArticle(id);
         ArticleDTO articleDTO = new ArticleDTO(article);
 
         return RsData.of("200", "게시글 단건 조회 성공", new ArticleResponse(articleDTO));
+
     }
 
     @PostMapping("")
+    @Operation(summary = "게시글 등록")
     public RsData<ArticleCreateResponse> create(@Valid @RequestBody ArticleCreateRequest articleCreateRequest) {
 
         Article article = this.articleService.write(articleCreateRequest.getSubject(), articleCreateRequest.getContent());
@@ -51,6 +60,7 @@ public class ApiV1ArticleController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "게시글 수정")
     public RsData<ArticleModifyResponse> modify(@PathVariable("id") Long id, @Valid @RequestBody ArticleModifyRequest articleModifyRequest) {
 
         Article article = this.articleService.getArticle(id);
@@ -68,8 +78,21 @@ public class ApiV1ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    @Operation(summary = "게시글 삭제")
+    public RsData<ArticleResponse> delete(@PathVariable("id") Long id) {
 
-        return "삭제완료";
+        Article article = this.articleService.getArticle(id);
+
+        if (article == null) return RsData.of(
+                "500",
+                "%d 번 게시물은 존재하지 않습니다.".formatted(id),
+                null
+        );
+
+        this.articleService.delete(article);
+        ArticleDTO articleDTO = new ArticleDTO(article);
+
+        return RsData.of("200", "삭제성공", new ArticleResponse(articleDTO));
+
     }
 }

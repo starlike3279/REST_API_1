@@ -37,18 +37,18 @@ public class ArticleService {
     }
 
     public Article write(String subject, String content) {
+
         Article article = Article.builder()
                 .subject(subject)
                 .content(content)
                 .build();
-
         this.articleRepository.save(article);
 
         return article;
 
     }
 
-    public Article update(Article article, String subject, String content) {
+    public Article update(Article article, String content, String subject) {
 
         article.setSubject(subject);
         article.setContent(content);
@@ -56,6 +56,12 @@ public class ArticleService {
         this.articleRepository.save(article);
 
         return article;
+
+    }
+
+    public void delete(Article article) {
+
+        this.articleRepository.delete(article);
 
     }
 }
