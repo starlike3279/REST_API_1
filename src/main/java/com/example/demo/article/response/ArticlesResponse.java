@@ -4,10 +4,12 @@ import com.example.demo.article.dto.ArticleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
+import java.util.List;
+
 @AllArgsConstructor
+@Getter
 public class ArticlesResponse {
 
-    private final ArticleDTO article;
+    private final List<ArticleDTO> articleList;
 
 }

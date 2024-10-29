@@ -17,11 +17,13 @@ public class ArticleDTO {
     private final LocalDateTime modifiedDate;
 
     public ArticleDTO(Article article) {
+
         this.id = article.getId();
         this.subject = article.getSubject();
         this.content = article.getContent();
         this.createdDate = article.getCreatedDate();
         this.modifiedDate = article.getModifiedDate();
+
     }
 
 }
