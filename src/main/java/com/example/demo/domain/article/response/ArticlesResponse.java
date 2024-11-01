@@ -9,7 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class ArticlesResponse {
-
     private final List<ArticleDTO> articleList;
-
 }
