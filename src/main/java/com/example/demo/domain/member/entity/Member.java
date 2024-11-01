@@ -1,4 +1,4 @@
-package com.example.demo.article.entity;
+package com.example.demo.domain.member.entity;
 
 import com.example.demo.global.jpa.BaseEntity;
 import jakarta.persistence.Entity;
@@ -12,9 +12,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class Article extends BaseEntity {
+public class Member extends BaseEntity {
 
-    private String subject;
-    private String content;
+    private String username;
+    private String password;
 
 }

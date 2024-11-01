@@ -1,8 +1,8 @@
-package com.example.demo.article.service;
+package com.example.demo.domain.article.service;
 
-import com.example.demo.article.dto.ArticleDTO;
-import com.example.demo.article.entity.Article;
-import com.example.demo.article.repository.ArticleRepository;
+import com.example.demo.domain.article.dto.ArticleDTO;
+import com.example.demo.domain.article.entity.Article;
+import com.example.demo.domain.article.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,6 @@ public class ArticleService {
                 .collect(Collectors.toList());
 
         return articleDTOList;
-
     }
 
     public Article getArticle(Long id) {
@@ -42,6 +41,7 @@ public class ArticleService {
                 .subject(subject)
                 .content(content)
                 .build();
+
         this.articleRepository.save(article);
 
         return article;
