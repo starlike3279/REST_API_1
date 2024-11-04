@@ -2,12 +2,12 @@ package com.example.demo.domain.article.controller;
 
 import com.example.demo.domain.article.dto.ArticleDTO;
 import com.example.demo.domain.article.entity.Article;
-import com.example.demo.domain.article.request.ArticleCreateRequest;
-import com.example.demo.domain.article.request.ArticleModifyRequest;
-import com.example.demo.domain.article.response.ArticleCreateResponse;
-import com.example.demo.domain.article.response.ArticleModifyResponse;
-import com.example.demo.domain.article.response.ArticleResponse;
-import com.example.demo.domain.article.response.ArticlesResponse;
+import com.example.demo.domain.article.dto.request.ArticleCreateRequest;
+import com.example.demo.domain.article.dto.request.ArticleModifyRequest;
+import com.example.demo.domain.article.dto.response.ArticleCreateResponse;
+import com.example.demo.domain.article.dto.response.ArticleModifyResponse;
+import com.example.demo.domain.article.dto.response.ArticleResponse;
+import com.example.demo.domain.article.dto.response.ArticlesResponse;
 import com.example.demo.domain.article.service.ArticleService;
 import com.example.demo.global.RsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +37,6 @@ public class ApiV1ArticleController {
         return RsData.of("200", "게시글 다건 조회 성공", new ArticlesResponse(articleList));
     }
 
-
     @GetMapping("/{id}")
     @Operation(summary = "게시글 단건 조회")
     public RsData<ArticleResponse> getArticle(@PathVariable("id") Long id) {
@@ -66,9 +65,9 @@ public class ApiV1ArticleController {
         Article article = this.articleService.getArticle(id);
 
         if (article == null) return RsData.of(
-                "500",
-                "%d 번 게시물은 존재하지 않습니다.".formatted(id),
-                null
+            "500",
+            "%d 번 게시물은 존재하지 않습니다.".formatted(id),
+            null
         );
 
         article = this.articleService.update(article, articleModifyRequest.getSubject(), articleModifyRequest.getContent());
@@ -84,9 +83,9 @@ public class ApiV1ArticleController {
         Article article = this.articleService.getArticle(id);
 
         if (article == null) return RsData.of(
-                "500",
-                "%d 번 게시물은 존재하지 않습니다.".formatted(id),
-                null
+            "500",
+            "%d 번 게시물은 존재하지 않습니다.".formatted(id),
+            null
         );
 
         this.articleService.delete(article);

@@ -1,51 +1,69 @@
 package com.example.demo.domain.member.controller;
 
-import com.example.demo.domain.member.dto.MemberDTO;
+import com.example.demo.domain.member.dto.request.MemberRequest;
+import com.example.demo.domain.member.dto.response.MemberResponse;
 import com.example.demo.domain.member.entity.Member;
-import com.example.demo.domain.member.request.MemberRequest;
 import com.example.demo.domain.member.service.MemberService;
+import com.example.demo.global.RsData.RsData;
+import com.example.demo.global.jwt.JwtProvider;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import java.util.Map;
+
 
 @RestController
-@RequestMapping(value = "/api/v1/members", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v1/members")
 @RequiredArgsConstructor
 @Tag(name = "ApiV1MemberController", description = "회원 인증인가 API")
 public class ApiV1MemberController {
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/join")
-    public ResponseEntity<MemberDTO> join (@Valid @RequestBody MemberRequest memberRequest) {
+    public RsData<MemberResponse> join (@Valid @RequestBody MemberRequest memberRequest) {
         Member member = this.memberService.join(memberRequest.getUsername(), memberRequest.getPassword());
-
-        return ResponseEntity.ok(new MemberDTO(member));
+        return RsData.of("200", "회원가입이 완료되었습니다.", new MemberResponse(member));
     }
 
     @PostMapping("/login")
-    public ResponseEntity login (@Valid @RequestBody MemberRequest memberRequest, HttpSession httpSession) {
+    public RsData<MemberResponse> login (@Valid@RequestBody MemberRequest memberRequest, HttpServletResponse resp) {
         Member member = this.memberService.getMember(memberRequest.getUsername());
+        String accessToken = jwtProvider.genAccessToken(member);
 
-        if (member == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("존재하지 않는 회원입니다.");
-        }
+        resp.addHeader("accessToken", accessToken);
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        resp.addCookie(cookie);
 
-        httpSession.setAttribute("USER_ID", member.getUsername());
-
-        return ResponseEntity.ok("로그인 성공");
+        return RsData.of("200", accessToken, new MemberResponse(member));
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity logout(HttpSession httpSession) {
+    @GetMapping("/me")
+    public String me (HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies();
+        String accessToken = "";
+        for (Cookie cookie : cookies) {
+            if ("accessToken".equals(cookie.getName())) {
+                accessToken = cookie.getValue();
+            }
+        }
 
-        httpSession.invalidate();
+        boolean checkedToken = jwtProvider.verify(accessToken);
 
-        return ResponseEntity.ok("로그아웃 성공");
+        System.out.println(checkedToken);
+        if (!checkedToken) {
+            return "유효성 검증 실패";
+        }
+
+        Map<String, Object> claims = jwtProvider.getClaims(accessToken);
+        claims.get("id");
+        claims.get("username");
+
+        return (String) claims.get("username");
     }
 }
