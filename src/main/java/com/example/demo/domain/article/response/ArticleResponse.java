@@ -7,5 +7,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ArticleResponse {
-    private  final ArticleDTO article;
+    private final ArticleDTO article;
 }
