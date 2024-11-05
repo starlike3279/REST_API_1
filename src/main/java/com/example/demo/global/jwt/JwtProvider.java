@@ -1,7 +1,7 @@
 package com.example.demo.global.jwt;
 
 import com.example.demo.domain.member.entity.Member;
-import com.example.demo.global.util.Util;
+import com.example.demo.global.Util.Util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -21,20 +21,20 @@ public class JwtProvider {
 
     private SecretKey cachedSecretKey;
 
-    // 시크릿 키 가져오기
+    // 시크릿키 가지고 오기
     public SecretKey getSecretKey() {
         if (cachedSecretKey == null) cachedSecretKey = _getSecretKey();
 
         return cachedSecretKey;
     }
 
-    // 시크릿 키 인코딩
+    // 스크릿 키 인코딩
     private SecretKey _getSecretKey() {
         String keyBase64Encoded = Base64.getEncoder().encodeToString(secretKeyOrigin.getBytes());
         return Keys.hmacShaKeyFor(keyBase64Encoded.getBytes());
     }
 
-    // 리프레시 토큰 만들기
+    // refreshToken 토큰 만들기
     public String genRefreshToken(Member member) {
         return genToken(member, 60 * 60 * 24 * 365 * 1);
     }
@@ -44,6 +44,7 @@ public class JwtProvider {
         return genToken(member, 60 * 10);
     }
 
+
     // 토큰 생성
     public String genToken (Member member, int seconds) {
         Map<String, Object> claims = new HashMap<>();
@@ -52,7 +53,7 @@ public class JwtProvider {
         claims.put("username", member.getUsername());
 
         long now = new Date().getTime();
-        Date accessTokenExpiresIn = new Date(now + 1000L * seconds); //1000L에서 L은 Long 의미
+        Date accessTokenExpiresIn = new Date(now + 1000L * seconds);
 
         return Jwts.builder()
                 .claim("body", Util.json.toStr(claims))

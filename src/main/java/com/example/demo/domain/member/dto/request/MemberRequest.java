@@ -1,4 +1,5 @@
 package com.example.demo.domain.member.dto.request;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
